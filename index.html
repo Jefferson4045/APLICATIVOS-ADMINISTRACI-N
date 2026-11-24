@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>INTELECTUS-CI — Sistema de Evaluación del Capital Intelectual</title>
+  <meta name="description" content="Aplicación web para evaluar el capital intelectual de personas y organizaciones en el marco de la Administración Estratégica.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Barra Superior -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="btn-sidebar-toggle" id="btnToggleSidebar" aria-label="Alternar menú lateral">
+        <i data-lucide="menu" class="ic"></i>
+      </button>
+      <button class="marca" data-act="nav" data-arg="inicio" aria-label="Ir al inicio de INTELECTUS">
+        <span class="marca-logo">INTELECTUS<span style="background:#ea7c1a; color:#fff; font-size:0.75rem; padding:0.12rem 0.45rem; border-radius:4px; margin-left:0.35rem; vertical-align:middle; font-weight:800;">-CI</span></span>
+        <span class="marca-sub">Sistema de Evaluación del Capital Intelectual</span>
+      </button>
+    </div>
+
+    <div class="topbar-right">
+      <span id="ctxBadge" class="ctx-badge"></span>
+      <button class="btn btn-ghost btn-sm" data-act="toggleModoSustentacion" id="btnModoSustentacion" title="Alternar modo sustentación / pantalla completa para proyector">
+        <i data-lucide="maximize-2" class="ic"></i>
+        <span class="hide-mobile">Modo Sustentación</span>
+      </button>
+      <a href="intelectus_cv.html" class="btn btn-ghost btn-sm btn-link-cv" title="Ir a INTELECTUS-CV — Perfil de Competencias Mineras por Cadena de Valor">
+        <i data-lucide="layers" class="ic"></i>
+        <span>INTELECTUS-CV (Minería)</span>
+      </a>
+      <button class="btn btn-ghost btn-sm" data-act="nav" data-arg="inicio" title="Pantalla de Bienvenida">
+        <i data-lucide="home" class="ic"></i>
+        <span class="hide-mobile">Inicio</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Contenedor Principal con Menú Lateral -->
+  <div class="app-layout">
+    <!-- Menú Lateral Dinámico -->
+    <aside class="sidebar" id="sidebar" aria-label="Menú principal de navegación">
+      <div class="sidebar-header">
+        <div class="sidebar-mode-label" id="sidebarModeLabel">MODALIDAD</div>
+        <div class="sidebar-user-title" id="sidebarUserTitle">No seleccionado</div>
+      </div>
+
+      <nav class="sidebar-nav" id="sidebarNav">
+        <!-- Generado dinámicamente según la modalidad (Personal o Empresarial) -->
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-disclaimer">
+          <small>INTELECTUS v1.0<br>Administración Estratégica</small>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Fondo de superposición para móviles -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+    <!-- Área de Contenido Principal -->
+    <main id="app" class="main-content" tabindex="-1">
+      <!-- Vistas inyectadas dinámicamente por app.js -->
+    </main>
+  </div>
+
+  <!-- Pie de página general -->
+  <footer class="pie">
+    <div class="pie-in">
+      <span>INTELECTUS-CI · Sistema de Evaluación del Capital Intelectual · Proyecto de Administración Estratégica</span>
+      <span class="pie-sep">|</span>
+      <span>Versión demostrativa local (datos almacenados en LocalStorage del navegador)</span>
+    </div>
+  </footer>
+
+  <!-- Contenedor de Modales y Mensajes Flotantes -->
+  <div id="modal"></div>
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <noscript>
+    <div style="padding:2rem;text-align:center;background:#fff3cd;color:#856404;margin:2rem auto;max-width:600px;border-radius:10px;">
+      <h3>Se requiere JavaScript</h3>
+      <p>Esta aplicación interactiva requiere JavaScript habilitado para ejecutar los cuestionarios, gráficos y cálculos de capital intelectual.</p>
+    </div>
+  </noscript>
+
+  <!-- Bibliotecas externas -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
