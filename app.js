@@ -1193,6 +1193,322 @@ function htmlAnalisisFortalezasMejoras(items) {
     ${htmlRecomendacionesEstructuradas(a.mej)}`;
 }
 
+/* ============================ MOTOR DE PLAN DE ACCIÓN ESTRATÉGICO ============================ */
+function diagnosticarEscenarioPlan(puntajeGlobal) {
+  if (puntajeGlobal <= 2.60) {
+    return {
+      nivel: 'critico',
+      etiqueta: 'Nivel Crítico / Prioridad de Rescate',
+      estrategia: 'Estrategia de Choque y Reestructuración Base',
+      desc: 'El resultado global refleja brechas críticas (≤ 2.60) que comprometen el desempeño estratégico. Se activa un plan de intervención inmediata (0–30 días) orientado a estabilizar competencias esenciales, canales relacionales y procesos clave.'
+    };
+  }
+  if (puntajeGlobal <= 3.40) {
+    return {
+      nivel: 'intermedio',
+      etiqueta: 'Nivel Intermedio / En Desarrollo',
+      estrategia: 'Estrategia de Cierre de Brechas y Estandarización',
+      desc: 'Se observa una base operativa funcional, pero con brechas tácticas (≤ 3.40). El plan prioriza el fortalecimiento progresivo en el corto plazo (31–60 días) para llevar las áreas débiles al umbral de consolidación.'
+    };
+  }
+  if (puntajeGlobal <= 4.20) {
+    return {
+      nivel: 'alto',
+      etiqueta: 'Nivel Alto / Consolidado',
+      estrategia: 'Estrategia de Optimización hacia el Benchmark (4,50)',
+      desc: 'Los resultados muestran un capital intelectual maduro y competitivo. El plan enfoca los esfuerzos en cerrar las brechas relativas restantes para alcanzar el estándar de excelencia Benchmark (4,50).'
+    };
+  }
+  return {
+    nivel: 'sobresaliente',
+    etiqueta: 'Nivel Sobresaliente / Excelencia',
+    estrategia: 'Estrategia de Sostenimiento, Mentoría e Innovación',
+    desc: 'Desempeño sobresaliente (> 4.20) en la evaluación. El plan estructura iniciativas de sostenimiento, transferencia de conocimiento (mentoría) e innovación continua sobre las áreas de menor puntuación relativa.'
+  };
+}
+
+function construirAccionItem(item, modo) {
+  const v = item.valor;
+  const cap = item.cap || 'humano';
+  const r = item.rec || {
+    area: item.nombre,
+    explicacion: 'Dimensión clave para el equilibrio del capital intelectual.',
+    accion: 'Ejecutar sesiones prácticas de mejora continua y revisión periódica de avances.',
+    objetivo: 'Elevar de forma sostenida el desempeño en la próxima re-evaluación.'
+  };
+
+  let prio = 'p3', prioEtq = '🟢 P3 · Optimización', plazo = '61 – 90+ días (Mediano Plazo)', fase = 3;
+  if (v <= 2.60) {
+    prio = 'p1'; prioEtq = '🔴 P1 · Crítica'; plazo = '0 – 30 días (Inmediato)'; fase = 1;
+  } else if (v <= 3.40) {
+    prio = 'p2'; prioEtq = '🟡 P2 · Táctica'; plazo = '31 – 60 días (Corto Plazo)'; fase = 2;
+  }
+
+  const brecha = Math.max(0, 4.50 - v);
+  const meta = v <= 2.60
+    ? Math.min(3.60, v + 1.00)
+    : (v <= 3.40 ? Math.min(4.10, v + 0.70) : Math.max(4.50, Math.min(5.00, v + 0.30)));
+
+  let accionAdaptada = r.accion;
+  if (v <= 2.60) {
+    accionAdaptada = `[Intervención urgente] ${r.accion} Realizar seguimiento semanal de cumplimiento.`;
+  } else if (v > 3.40) {
+    accionAdaptada = `[Sostenimiento y excelencia] ${r.accion} Documentar buenas prácticas y asumir rol de referente.`;
+  }
+
+  const responsablesEmp = {
+    humano: 'Gerencia de Talento Humano / Jefaturas de Área',
+    relacional: 'Gerencia Comercial / Compras / Rel. Comunitarias',
+    estructural: 'Gerencia de Operaciones / TI / Aseguramiento de Calidad'
+  };
+  const responsablesPers = {
+    humano: 'Evaluado (Autogestión) y Mentor / Tutor',
+    relacional: 'Evaluado y Red de Pares / Supervisión',
+    estructural: 'Evaluado (Hábitos digitales y gestión personal)'
+  };
+
+  const kpisEmp = {
+    humano: `Puntaje ≥ ${f2(meta)} y ≥ 85% cumplimiento del Plan de Capacitación`,
+    relacional: `Puntaje ≥ ${f2(meta)} e Índice de Satisfacción / OTIF ≥ 95%`,
+    estructural: `Puntaje ≥ ${f2(meta)} y 100% de procesos críticos documentados`
+  };
+  const kpisPers = {
+    humano: `Subir de ${f2(v)} a ≥ ${f2(meta)} en re-evaluación (4 semanas)`,
+    relacional: `Subir de ${f2(v)} a ≥ ${f2(meta)} con ≥ 2 evidencias prácticas/mes`,
+    estructural: `Subir de ${f2(v)} a ≥ ${f2(meta)} con hábito semanal verificado`
+  };
+
+  const dimNombre = (CAPS[cap] && CAPS[cap].nombre) ? CAPS[cap].nombre : 'Capital Humano';
+
+  return {
+    area: r.area || item.nombre,
+    dimension: dimNombre,
+    cap,
+    valor: v,
+    brecha,
+    meta,
+    prio,
+    prioEtq,
+    plazo,
+    fase,
+    diagnostico: r.explicacion,
+    accion: accionAdaptada,
+    objetivo: `${r.objetivo} (Meta numérica: ${f2(v)} → ≥ ${f2(meta)})`,
+    responsable: modo === 'empresa' ? (responsablesEmp[cap] || responsablesEmp.humano) : (responsablesPers[cap] || responsablesPers.humano),
+    kpi: modo === 'empresa' ? (kpisEmp[cap] || kpisEmp.humano) : (kpisPers[cap] || kpisPers.humano)
+  };
+}
+
+function renderPlanAccionEstructurado({ modo, titulo, subtitulo, entidad, puntajeGlobal, items, volverAct, porArea }) {
+  const escDiag = diagnosticarEscenarioPlan(puntajeGlobal);
+  const ordenados = [...items].sort((a, b) => a.valor - b.valor);
+  const conBrecha = ordenados.filter(x => x.valor <= CONFIG.umbralMejora);
+  // Si todas superan 3.40, tomar hasta las 6 con menor puntaje relativo para plan de optimización/sostenimiento
+  const seleccionados = conBrecha.length ? conBrecha : ordenados.slice(0, Math.min(6, ordenados.length));
+  const acciones = seleccionados.map(it => construirAccionItem(it, modo));
+
+  const nP1 = acciones.filter(a => a.prio === 'p1').length;
+  const nP2 = acciones.filter(a => a.prio === 'p2').length;
+  const nP3 = acciones.filter(a => a.prio === 'p3').length;
+  const brechaProm = avg(acciones.map(a => a.brecha));
+
+  const f1 = acciones.filter(a => a.fase === 1);
+  const f2Items = acciones.filter(a => a.fase === 2);
+  const f3 = acciones.filter(a => a.fase === 3);
+
+  // Focos departamentales (solo en modalidad empresarial si existen áreas visibles)
+  let htmlDeptos = '';
+  if (modo === 'empresa' && porArea && porArea.length) {
+    const visibles = porArea.filter(a => !a.oculto).sort((a, b) => a.total - b.total);
+    if (visibles.length) {
+      const focos = visibles.slice(0, 3);
+      htmlDeptos = `
+        <div class="card">
+          <h3>Foco de Intervención por Departamento / Área</h3>
+          <p class="nota">Áreas organizacionales ordenadas de menor a mayor índice global para focalizar recursos y capacitación.</p>
+          <div class="plan-table-wrap">
+            <table class="plan-table">
+              <thead>
+                <tr>
+                  <th>Departamento / Oficina</th>
+                  <th>Índice Global</th>
+                  <th>Dimensión Más Débil</th>
+                  <th>Directiva Recomendada</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${focos.map(a => {
+                  const dims = [
+                    { k: 'Capital Humano', v: a.humano },
+                    { k: 'Capital Relacional', v: a.relacional },
+                    { k: 'Capital Estructural', v: a.estructural }
+                  ].sort((x, y) => x.v - y.v);
+                  const debil = dims[0];
+                  const dir = a.total <= 2.60
+                    ? `Intervención inmediata en ${debil.k} (${f2(debil.v)}) mediante mesa técnica semanal.`
+                    : (a.total <= 3.40
+                      ? `Plan de nivelación táctica en ${debil.k} (${f2(debil.v)}) en los próximos 60 días.`
+                      : `Consolidar liderazgo y transferir buenas prácticas desde ${debil.k} (${f2(debil.v)}).`);
+                  return `
+                    <tr>
+                      <td><strong>${esc(a.area)}</strong><br><small class="muted">${a.n} respuestas</small></td>
+                      <td>${f2(a.total)} ${pill(a.total)}</td>
+                      <td><strong>${debil.k}</strong> (${f2(debil.v)})</td>
+                      <td>${esc(dir)}</td>
+                    </tr>`;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>`;
+    }
+  }
+
+  return `
+    <div class="solo-print">
+      <h2>INTELECTUS-CI — ${esc(titulo)}</h2>
+      <p>${esc(entidad)} · Fecha: ${fmtFecha(hoy())} · Índice Global: ${f2(puntajeGlobal)} / 5,00</p>
+    </div>
+
+    <div class="fila sep" style="margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem;">
+      <div>
+        <h2>${esc(titulo)}</h2>
+        <p class="muted">${esc(subtitulo)}</p>
+      </div>
+      <div class="fila no-print" style="gap:0.4rem;">
+        <button class="btn btn-sec btn-sm" data-act="nav" data-arg="${volverAct}">${icono('arrow-left')} Volver al panel</button>
+        <button class="btn btn-sm" data-act="imprimir">${icono('printer')} Imprimir / PDF</button>
+      </div>
+    </div>
+
+    <!-- 1. DIAGNÓSTICO SITUACIONAL Y KPIs DEL PLAN -->
+    <div class="card plan-banner nivel-${escDiag.nivel}">
+      <div class="fila sep" style="align-items:flex-start; flex-wrap:wrap; gap:1rem;">
+        <div style="flex:1; min-width:260px;">
+          <div class="plan-tag-diag">
+            ${icono('compass')} DIAGNÓSTICO AUTOMÁTICO BASADO EN RESULTADOS
+          </div>
+          <h3 style="margin:0.2rem 0 0.35rem; font-size:1.3rem;">${esc(escDiag.estrategia)}</h3>
+          <p style="margin:0; font-size:0.93rem;">${esc(escDiag.desc)}</p>
+        </div>
+        <div style="text-align:right; background:#fff; padding:0.75rem 1.1rem; border-radius:12px; border:1px solid var(--line); box-shadow:var(--shadow-sm);">
+          <div class="score-num" style="font-size:2.1rem;">${f2(puntajeGlobal)} <span class="score-max">/ 5,00</span></div>
+          <span class="pill ${clasif(puntajeGlobal).cls}">${esc(escDiag.etiqueta)}</span>
+        </div>
+      </div>
+
+      <div class="kpis" style="margin-top:1rem; margin-bottom:0;">
+        <div class="kpi">
+          <div class="kpi-num">${acciones.length}</div>
+          <small>Iniciativas en el Plan</small>
+        </div>
+        <div class="kpi">
+          <div class="kpi-num" style="color:var(--r1);">${nP1}</div>
+          <small>Prioridad Crítica (P1)</small>
+        </div>
+        <div class="kpi">
+          <div class="kpi-num" style="color:var(--r2);">${nP2}</div>
+          <small>Prioridad Táctica (P2)</small>
+        </div>
+        <div class="kpi">
+          <div class="kpi-num" style="color:var(--navy);">${f2(brechaProm)}</div>
+          <small>Brecha Prom. vs Benchmark (4,50)</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. MATRIZ ESTRUCTURADA DEL PLAN DE ACCIÓN -->
+    <div class="card">
+      <div class="fila sep" style="margin-bottom:0.75rem; flex-wrap:wrap; gap:0.5rem;">
+        <div>
+          <h3 style="margin:0;">Matriz Estructurada del Plan de Acción</h3>
+          <p class="nota" style="margin:0.15rem 0 0;">Ordenada por nivel de urgencia (de menor a mayor puntaje arrojado).</p>
+        </div>
+        <div class="filter-subindices-bar no-print">
+          <button type="button" class="filter-pill act" data-act="filtrarPlanAccion" data-arg="todos">📋 Todas (${acciones.length})</button>
+          <button type="button" class="filter-pill" data-act="filtrarPlanAccion" data-arg="p1">🔴 Críticas P1 (${nP1})</button>
+          <button type="button" class="filter-pill" data-act="filtrarPlanAccion" data-arg="p2">🟡 Tácticas P2 (${nP2})</button>
+          <button type="button" class="filter-pill" data-act="filtrarPlanAccion" data-arg="p3">🟢 Optimización P3 (${nP3})</button>
+        </div>
+      </div>
+
+      <div class="plan-table-wrap">
+        <table class="plan-table">
+          <thead>
+            <tr>
+              <th>Prioridad</th>
+              <th>Área / Dimensión</th>
+              <th>Resultado y Brecha</th>
+              <th>Objetivo Estratégico (SMART)</th>
+              <th>Acciones Concretas</th>
+              <th>Responsable y Plazo</th>
+              <th>KPI de Verificación</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyPlanAccion">
+            ${acciones.map(a => {
+              const barColor = a.prio === 'p1' ? 'var(--r1)' : (a.prio === 'p2' ? 'var(--r2)' : 'var(--r5)');
+              const pctBar = Math.min(100, Math.round((a.valor / 5) * 100));
+              return `
+              <tr data-prio="${a.prio}">
+                <td>
+                  <span class="prio-badge prio-${a.prio}">${a.prioEtq}</span>
+                </td>
+                <td>
+                  <strong>${esc(a.area)}</strong><br>
+                  <span class="cap-chip ${a.cap}">${esc(a.dimension)}</span>
+                </td>
+                <td>
+                  <strong>${f2(a.valor)}</strong> / 5,00
+                  <div class="mini-bar-wrap" title="Nivel actual: ${pctBar}%">
+                    <div class="mini-bar-fill" style="width:${pctBar}%; background:${barColor};"></div>
+                  </div>
+                  <small class="muted">Brecha: -${f2(a.brecha)} pts</small>
+                </td>
+                <td>${esc(a.objetivo)}</td>
+                <td>
+                  <div>${esc(a.accion)}</div>
+                  <small class="muted" style="display:block; margin-top:0.25rem;"><em>Diagnóstico:</em> ${esc(a.diagnostico)}</small>
+                </td>
+                <td>
+                  <strong>${esc(a.responsable)}</strong><br>
+                  <small class="muted">${esc(a.plazo)}</small>
+                </td>
+                <td>${esc(a.kpi)}</td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 3. HOJA DE RUTA POR HORIZONTES (30 - 60 - 90 DÍAS) -->
+    <div class="card">
+      <h3>Hoja de Ruta de Ejecución (Horizonte 30 – 60 – 90+ Días)</h3>
+      <p class="nota">Secuencia temporal recomendada para ejecutar el plan sin saturar la capacidad operativa.</p>
+      <div class="roadmap-grid">
+        <div class="roadmap-col fase-1">
+          <h4><span>Fase 1 · 0 a 30 días</span> <span class="prio-badge prio-p1">${f1.length}</span></h4>
+          ${f1.length ? `<ul class="roadmap-list">${f1.map(a => `<li><strong>${esc(a.area)} (${f2(a.valor)}):</strong> ${esc(a.accion)}</li>`).join('')}</ul>` : '<p class="nota">Sin brechas críticas inmediatas en esta fase.</p>'}
+        </div>
+        <div class="roadmap-col fase-2">
+          <h4><span>Fase 2 · 31 a 60 días</span> <span class="prio-badge prio-p2">${f2Items.length}</span></h4>
+          ${f2Items.length ? `<ul class="roadmap-list">${f2Items.map(a => `<li><strong>${esc(a.area)} (${f2(a.valor)}):</strong> ${esc(a.accion)}</li>`).join('')}</ul>` : '<p class="nota">Sin brechas tácticas pendientes en esta fase.</p>'}
+        </div>
+        <div class="roadmap-col fase-3">
+          <h4><span>Fase 3 · 61 a 90+ días</span> <span class="prio-badge prio-p3">${f3.length}</span></h4>
+          ${f3.length ? `<ul class="roadmap-list">${f3.map(a => `<li><strong>${esc(a.area)} (${f2(a.valor)}):</strong> ${esc(a.accion)}</li>`).join('')}</ul>` : '<p class="nota">Se recomienda programar la re-evaluación integral al cierre del trimestre.</p>'}
+        </div>
+      </div>
+    </div>
+
+    ${htmlDeptos}
+
+    <div class="aviso">
+      <strong>Seguimiento y Control:</strong> Se recomienda re-aplicar la evaluación INTELECTUS-CI al término de los 60–90 días para medir el cierre efectivo de brechas respecto a las metas trazadas.
+    </div>`;
+}
+
 /* ============================ ESTADOS DE AVANCE ============================ */
 function estadoEval(key) {
   const def = DEFS[key], tot = nPreg(def);
@@ -2007,47 +2323,33 @@ VISTAS.planMejora = () => {
   const hechas = INTELIGENCIAS.filter(i => S.eval['int_' + i.id]);
 
   const items = [
-    ...hechas.map(i => ({ nombre: i.nombre, valor: S.eval['int_' + i.id].resultado.total, rec: i.rec })),
-    ...(rel ? rel.resultado.subs : []),
-    ...(est ? est.resultado.subs : [])
+    ...hechas.map(i => ({ nombre: i.nombre, cap: 'humano', valor: S.eval['int_' + i.id].resultado.total, rec: i.rec })),
+    ...(rel ? rel.resultado.subs.map(s => ({ ...s, cap: 'relacional' })) : []),
+    ...(est ? est.resultado.subs.map(s => ({ ...s, cap: 'estructural' })) : [])
   ];
 
   if (!items.length) {
     return `
-      <h2>Plan de Mejora y Desarrollo</h2>
+      <h2>Plan de Acción Estratégico Personal</h2>
       <div class="card">
-        <p>Aún no dispones de evaluaciones completadas para generar recomendaciones personalizadas.</p>
+        <p>Aún no dispones de evaluaciones completadas para generar el plan de acción personalizado según tus resultados.</p>
         <button class="btn btn-humano" data-act="nav" data-arg="panel">Ir a evaluar</button>
       </div>`;
   }
 
-  const areasMejora = items.filter(x => x.valor <= CONFIG.umbralMejora).sort((a, b) => a.valor - b.valor);
+  const dimTot = [ch.total, rel ? rel.resultado.total : null, est ? est.resultado.total : null].filter(v => v != null);
+  const puntajeGlobal = dimTot.length ? avg(dimTot) : avg(items.map(x => x.valor));
+  const nombrePersona = S.perfil ? S.perfil.nombre : 'Evaluado';
 
-  return `
-    <div class="fila sep" style="margin-bottom:1rem">
-      <div>
-        <h2>Plan Personal de Mejora y Fortalecimiento</h2>
-        <p class="muted">Recomendaciones estructuradas con área, explicación, acción sugerida y objetivo de mejora.</p>
-      </div>
-      <button class="btn btn-sec btn-sm" data-act="nav" data-arg="panel">${icono('arrow-left')} Volver al panel</button>
-    </div>
-
-    ${areasMejora.length ? `
-      <div class="card">
-        <h3>Áreas Prioritarias de Intervención (${areasMejora.length})</h3>
-        <p class="nota">Elementos con puntuación intermedia o baja (≤ 3.40) que representan tu mayor potencial de crecimiento.</p>
-      </div>
-      ${htmlRecomendacionesEstructuradas(areasMejora)}`
-    : `
-      <div class="card">
-        <h3>¡Desempeño Sobresaliente!</h3>
-        <p>Todas tus dimensiones evaluadas se sitúan en niveles altos (> 3.40). Te recomendamos mantener la práctica continua y explorar nuevos retos estratégicos.</p>
-      </div>`}
-
-    <div class="card">
-      <h3>Compromiso de Aprendizaje Continuo</h3>
-      <p class="nota">Selecciona una acción por semana y evalúa tu progreso repitiendo el cuestionario al cabo de un mes.</p>
-    </div>`;
+  return renderPlanAccionEstructurado({
+    modo: 'personal',
+    titulo: 'Plan de Acción Estratégico Personal',
+    subtitulo: `Acciones, objetivos SMART, plazos y KPIs generados según los resultados obtenidos por ${nombrePersona}.`,
+    entidad: `Evaluado: ${nombrePersona}`,
+    puntajeGlobal,
+    items,
+    volverAct: 'panel'
+  });
 };
 
 /* ---------- 9. HISTORIAL PERSONAL (SECCIÓN 14) ---------- */
@@ -2747,32 +3049,24 @@ VISTAS.empresaPlanMejora = () => {
   const g = agregarResultadosEmpresa();
   if (!g) {
     return `
-      <h2>Plan de Mejora Organizacional</h2>
-      <div class="card"><p>Aún no hay respuestas consolidadas para formular el plan empresarial.</p></div>`;
+      <h2>Plan de Acción Estratégico Empresarial</h2>
+      <div class="card">
+        <p>Aún no hay respuestas consolidadas para formular el plan de acción organizacional.</p>
+        <button class="btn btn-estructural" data-act="nav" data-arg="empresaPanel">Volver al panel empresarial</button>
+      </div>`;
   }
 
-  const areasMejora = g.subs.filter(x => x.valor <= CONFIG.umbralMejora).sort((a, b) => a.valor - b.valor);
-
-  return `
-    <div class="fila sep" style="margin-bottom:1rem">
-      <div>
-        <h2>Plan Estratégico de Intervención en Capital Intelectual</h2>
-        <p class="muted">Iniciativas prioritarias de optimización para ${esc(S.empresa.datos.nombre)}.</p>
-      </div>
-      <button class="btn btn-sec btn-sm" data-act="nav" data-arg="empresaPanel">${icono('arrow-left')} Volver al panel</button>
-    </div>
-
-    ${areasMejora.length ? `
-      <div class="card">
-        <h3>Subíndices con Brechas Detectadas (${areasMejora.length})</h3>
-        <p class="nota">Acciones concretas para fortalecer las dimensiones con menor rendimiento en la evaluación agregada.</p>
-      </div>
-      ${htmlRecomendacionesEstructuradas(areasMejora)}`
-    : `
-      <div class="card">
-        <h3>Rendimiento Organizacional Sólido</h3>
-        <p>Todos los subíndices de la empresa superan 3.40. El reto estratégico consiste en sostener las ventajas competitivas y fomentar la innovación continua.</p>
-      </div>`}`;
+  const nombreEmp = S.empresa.datos ? S.empresa.datos.nombre : 'Organización';
+  return renderPlanAccionEstructurado({
+    modo: 'empresa',
+    titulo: 'Plan Estratégico de Acción en Capital Intelectual',
+    subtitulo: `Matriz de intervención priorizada, responsables y hoja de ruta 30-60-90 días para ${nombreEmp}.`,
+    entidad: `Organización: ${nombreEmp} (${g.n} participantes)`,
+    puntajeGlobal: g.total,
+    items: g.subs,
+    volverAct: 'empresaPanel',
+    porArea: g.porArea
+  });
 };
 
 /* ---------- 18. INFORMES EMPRESARIALES (SECCIÓN 13 Y 16) ---------- */
@@ -3095,6 +3389,19 @@ const ACT = {
       } else {
         f.style.display = 'none';
       }
+    });
+  },
+
+  filtrarPlanAccion(criterio) {
+    const filtro = criterio || 'todos';
+    const pills = document.querySelectorAll('.filter-subindices-bar .filter-pill[data-act="filtrarPlanAccion"]');
+    pills.forEach(p => {
+      p.classList.toggle('act', p.dataset.arg === filtro);
+    });
+    const filas = document.querySelectorAll('#tbodyPlanAccion tr[data-prio]');
+    filas.forEach(f => {
+      const prio = f.dataset.prio;
+      f.style.display = (filtro === 'todos' || prio === filtro) ? '' : 'none';
     });
   },
 

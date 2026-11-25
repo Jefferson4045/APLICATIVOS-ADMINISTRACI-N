@@ -856,3 +856,166 @@ body.modo-sustentacion h3 {
 body.modo-sustentacion .main-content {
   max-width: 1320px;
 }
+
+/* ==========================================================================
+   PLAN DE ACCIÓN ESTRATÉGICO (PERSONAL Y EMPRESARIAL) - DISEÑO EJECUTIVO
+   ========================================================================== */
+.plan-banner {
+  border-left: 6px solid var(--navy);
+  background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+}
+.plan-banner.nivel-critico { border-left-color: var(--r1); background: linear-gradient(135deg, #ffffff 0%, #fef2f2 100%); }
+.plan-banner.nivel-intermedio { border-left-color: var(--r2); background: linear-gradient(135deg, #ffffff 0%, #fffbeb 100%); }
+.plan-banner.nivel-alto { border-left-color: var(--r4); background: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%); }
+.plan-banner.nivel-sobresaliente { border-left-color: var(--r5); background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%); }
+
+.plan-tag-diag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  padding: 0.25rem 0.65rem;
+  border-radius: 6px;
+  background: rgba(18, 38, 63, 0.08);
+  color: var(--navy);
+  margin-bottom: 0.4rem;
+}
+
+.plan-banner .kpi {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.plan-banner .kpi:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.prio-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.74rem;
+  font-weight: 800;
+  padding: 0.26rem 0.65rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+.prio-p1 { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+.prio-p2 { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+.prio-p3 { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+
+.cap-chip {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 5px;
+  margin-top: 0.25rem;
+}
+.cap-chip.humano { background: var(--humano-bg); color: var(--humano-dark); }
+.cap-chip.relacional { background: var(--relacional-bg); color: var(--relacional-dark); }
+.cap-chip.estructural { background: var(--estructural-bg); color: var(--estructural-dark); }
+
+.mini-bar-wrap {
+  width: 78px;
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 0.3rem;
+}
+.mini-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+}
+
+.plan-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+}
+.plan-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.87rem;
+  background: #fff;
+}
+.plan-table th {
+  background: var(--navy);
+  color: #fff;
+  font-weight: 700;
+  text-align: left;
+  padding: 0.75rem 0.85rem;
+  border-bottom: 2px solid var(--navy2);
+  white-space: nowrap;
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+}
+.plan-table td {
+  padding: 0.85rem;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+  line-height: 1.45;
+}
+.plan-table tbody tr:nth-child(even) td {
+  background: #f8fafc;
+}
+.plan-table tbody tr:hover td {
+  background: #eff6ff;
+}
+
+.roadmap-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-top: 0.85rem;
+}
+.roadmap-col {
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 1.1rem 1.15rem;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.roadmap-col:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+.roadmap-col.fase-1 { border-top: 5px solid var(--r1); background: linear-gradient(180deg, #fffafa 0%, #ffffff 45%); }
+.roadmap-col.fase-2 { border-top: 5px solid var(--r2); background: linear-gradient(180deg, #fffdf5 0%, #ffffff 45%); }
+.roadmap-col.fase-3 { border-top: 5px solid var(--r5); background: linear-gradient(180deg, #f7fef9 0%, #ffffff 45%); }
+.roadmap-col h4 {
+  margin: 0 0 0.65rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.96rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.roadmap-list {
+  margin: 0;
+  padding-left: 1.15rem;
+  font-size: 0.85rem;
+}
+.roadmap-list li {
+  margin-bottom: 0.55rem;
+  line-height: 1.45;
+}
+
+@media (max-width: 900px) {
+  .roadmap-grid { grid-template-columns: 1fr; }
+}
